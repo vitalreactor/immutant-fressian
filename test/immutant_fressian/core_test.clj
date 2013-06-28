@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [immutant.messaging :as msg]
             [immutant.codecs :as codec]
+            [immutant.cache :as cache]
             [immutant-fressian.core :refer :all]))
 
 (defn f-able? [obj]
@@ -37,9 +38,23 @@
     (is (msg-able? 'test))
     (is (msg-able? :foo))
     (is (msg-able? {:test 10}))
-    (is (msg-able? [1 2 3]))
+    (is (msg-able? [[1 2 3]]))
     (is (msg-able? '(a b c)))))
-     
+
+(defn can-store? [c value]
+  (cache/put c value value)
+  (= value (get c value)))
+
 (deftest caching 
   (testing "Test cache storage"
-    (is (= 1 1))))
+    (let [c (cache/create "test"
+                          :mode :local
+                          :persist true
+                          :encoding :fressian)]
+      (is (can-store? c 1))
+      (is (can-store? c :a))
+      (is (can-store? c [[:a :b] #{1 2}]))
+      (is (can-store? c {:a 1 :b 2}))
+      (is (can-store? c {:a 1 :b [1 2 3]}))
+      (is (can-store? c (sorted-map :b 2 :c 3 :a 1))))))
+

@@ -1,7 +1,7 @@
 # immutant-fressian
 
-Extends immutant with a fressian codec. Natively supports
-fressian encoding for messaging.  May also work for caches.
+Adds a :fressian codec option to immutant.  Works out of the box with
+messaging and caches.
 
 Author: Ian Eslick
 
@@ -9,7 +9,7 @@ Author: Ian Eslick
 
 In project.clj
 
-    (:dependencies [immutant-fressian "0.1.0"])
+    (:dependencies [immutant-fressian "0.2.0"])
 
 Require immutant-fressian.core from some file at startup
 
@@ -23,6 +23,10 @@ Anywhere in your code after the extension is required...
 
     (msg/publish "/queue/test" {:test "This is my test object"}
                  :encoding :fressian)
+
+    (cache/create "test" :mode :local
+                         :persist true
+                         :encoding :fressian)
 
 If you are using Datomic, you can encode/decode entities and databases by...
 
